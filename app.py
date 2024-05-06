@@ -109,7 +109,7 @@ def model_interface():
         #pump_efficiency = st.number_input(label="Pump Efficiency", min_value=0.1, max_value=0.9)
         Maximum_heat_supplied = st.number_input(label="Maximum heat supplied", min_value=320, max_value=6900)
         Heat_Input_Heat_Exchanger = st.number_input(label="Heat Input into HeatExchanger", min_value=280, max_value=4020)
-        Net_Power_Outputr = st.number_input(label="Net Power Output", min_value=85, max_value=1940)
+        Net_Power_Output = st.number_input(label="Net Power Output", min_value=85, max_value=1940)
         Cycle_Thermal_Efficiency = st.number_input(label="Cycle Thermal Efficiency", min_value=1.9, max_value=6.9)
         Exergy_Efficiency = st.number_input(label="Exergy Efficiency", min_value= 0.2, max_value= 1.4)
         values = [#strength_of_mixture,
