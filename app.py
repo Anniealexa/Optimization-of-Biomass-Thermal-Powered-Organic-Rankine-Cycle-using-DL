@@ -93,8 +93,8 @@ def show_data():
 
 
 def model_interface():
-    st.title("A Heat Supply Predictor")
-    st.write("How much power can you generate from your cornstalk using R245fa rankine cycle? Let's find out")
+    st.title("Optimization of Biomass Thermal-Powered Organic Rankine Cycle using the Deep Learning Algorithm")
+    st.write("What are our Decision Paramters based on your needs? Let's find out")
     with st.sidebar:
         st.subheader('Select Values')
         #strength_of_mixture = st.number_input(label="Stength of Mixture", min_value=0, max_value=10)
@@ -142,7 +142,8 @@ def model_interface():
         pump_efficiency = int(predictions[2])
         Evaporator_efficiency = int(predictions[2])
         Pinch_Point_Temperature = round(predictions[1], 1)
-        
+
+        st.write(f"Type of Biomass: {Type_Biomass}")
         st.write(f"Strength of mixture: {Strength_of_mixture}")
         st.write(f"Combustion efficiency: {Combustion_efficiency}")
         st.write(f"Temperature at point1: {Temperature_at_point1}")
