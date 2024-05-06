@@ -57,12 +57,12 @@ class TabularModel(nn.Module):
         output = self.output(x)
         return output
 
-input_size = 7  # Number of input features
-hidden_size1 = 64
-hidden_size2 = 32
-hidden_size3 = 16
-hidden_size4 = 8
-output_size = 4
+input_size = 8  # Number of input features
+hidden_size1 = 128
+hidden_size2 = 64
+hidden_size3 = 32
+hidden_size4 = 16
+output_size = 9
 device = torch.device('cuda') if torch.cuda.is_available() else 'cpu'
 model = TabularModel(input_size, hidden_size1, hidden_size2, hidden_size3, hidden_size4, output_size).to(device).eval()
 state_dict = torch.load('model.bin')
@@ -72,14 +72,17 @@ model.load_state_dict(state_dict)
 
 scaler  = load('scaler.joblib')
 
-columns = ['Strength_of_mixture', 'Combustion_efficiency'
-           , 'Temperature_at_point1',
-           'Pressure_at_point1' ,
-           'Temperature_at_point2', 'Evaporator_efficiency', 'Pump_efficiency'
-           ]
+columns = ['Mass_flowrate_Biomass',"Hot_side_Inlet_Temperature", 
+          'Mass_flowrate_workingfluid','Maximum_heat_supplied',
+          'Heat_Input_Heat_Exchanger','Net_Power_Output', 
+          'Cycle_Thermal_Efficiency', 'Exergy_Efficiency']
 
-label = "Maximum_heat_supplied"
-labels = ["Hot_side_Inlet_Temperature","Maximum_heat_supplied",'Mass_flowrate_workingfluid', 'Mass_flowrate_Biomass']
+#label = "Maximum_heat_supplied"
+labels = ['Type_Biomass','Strength_of_mixture', 
+           'Combustion_efficiency', 'Temperature_at_point1', 
+           'Pressure_at_point1' , 'Temperature_at_point2', 'pump_efficiency',
+           'Evaporator_efficiency','Pinch_Point_Temperature'
+           ]
 
 
 def preview():
@@ -94,27 +97,35 @@ def model_interface():
     st.write("How much power can you generate from your cornstalk using R245fa rankine cycle? Let's find out")
     with st.sidebar:
         st.subheader('Select Values')
-        strength_of_mixture = st.number_input(label="Stength of Mixture", min_value=0, max_value=10)
-        #mass_flowrate_Biomass = st.number_input(label="Mass Flowrate of Biomass", min_value=0.1, max_value=0.9)
-        combustion_efficiency = st.number_input(label="Combustion Efficiency", min_value=0.1, max_value=0.9)
-        #hot_side_Inlet_Temperature = st.number_input(label="Hot Side Inlet Temperature", min_value=0.0,
-         #                                            max_value=5000.0)
-        temperature_at_point1 = st.number_input(label="Temperature at Point 1", min_value=0, max_value=500)
-        pressure_at_point1 = st.number_input(label="Pressure at Point 1", min_value=100000, max_value=10000000)
-        #mass_flowrate_workingfluid = st.number_input(label="Mass Flowrate of Working Fluid", min_value=1, max_value=20)
-        temperature_at_point2 = st.number_input(label="Temperature at Point 2", min_value=0, max_value=500)
-        evaporator_efficiency = st.number_input(label="Evaporator Efficiency", min_value=0.1, max_value=0.9)
-        pump_efficiency = st.number_input(label="Pump Efficiency", min_value=0.1, max_value=0.9)
-        values = [strength_of_mixture,
-                  #mass_flowrate_Biomass,
-                  combustion_efficiency,
-                  #hot_side_Inlet_Temperature,
-                  temperature_at_point1,
-                  pressure_at_point1,
-                  #mass_flowrate_workingfluid,
-                  temperature_at_point2,
-                  evaporator_efficiency,
-                  pump_efficiency
+        #strength_of_mixture = st.number_input(label="Stength of Mixture", min_value=0, max_value=10)
+        mass_flowrate_Biomass = st.number_input(label="Mass Flowrate of Biomass", min_value=0.1, max_value=0.9)
+        #combustion_efficiency = st.number_input(label="Combustion Efficiency", min_value=0.1, max_value=0.9)
+        hot_side_Inlet_Temperature = st.number_input(label="Hot Side Inlet Temperature", min_value=440, max_value=1380.0)
+        #temperature_at_point1 = st.number_input(label="Temperature at Point 1", min_value=0, max_value=500)
+        #pressure_at_point1 = st.number_input(label="Pressure at Point 1", min_value=100000, max_value=10000000)
+        mass_flowrate_workingfluid = st.number_input(label="Mass Flowrate of Working Fluid", min_value=1, max_value=11)
+        #temperature_at_point2 = st.number_input(label="Temperature at Point 2", min_value=0, max_value=500)
+        #evaporator_efficiency = st.number_input(label="Evaporator Efficiency", min_value=0.1, max_value=0.9)
+        #pump_efficiency = st.number_input(label="Pump Efficiency", min_value=0.1, max_value=0.9)
+        Maximum_heat_supplied = st.number_input(label="Maximum heat supplied", min_value=320, max_value=6900)
+        Heat_Input_Heat_Exchanger = st.number_input(label="Heat Input into HeatExchanger", min_value=280, max_value=4020)
+        Cycle_Thermal_Efficiency = st.number_input(label="Cycle Thermal Efficiency", min_value=1.9, max_value=6.9)
+        Exergy_Efficiency = st.number_input(label="Exergy Efficiency", min_value= 0.2, max_value= 1.4)
+        values = [#strength_of_mixture,
+                  mass_flowrate_Biomass,
+                  #combustion_efficiency,
+                  hot_side_Inlet_Temperature,
+                  #temperature_at_point1,
+                  #pressure_at_point1,
+                  mass_flowrate_workingfluid,
+                  #temperature_at_point2,
+                  #evaporator_efficiency,
+                  #pump_efficiency
+                  Maximum_heat_supplied,
+                  Heat_Input_Heat_Exchanger,
+                  Net_Power_Output,
+                  Cycle_Thermal_Efficiency,
+                  Exergy_Efficiency
                   ]
         array = np.array(values).reshape(1, -1)
         array = scaler.transform(array)
@@ -122,14 +133,24 @@ def model_interface():
     if button:
         prediction = model(torch.tensor(array).to(dtype = torch.float32))
         predictions = prediction.detach().tolist()[0]
-        maximum_heat_supplied = predictions[0]
-        mass_flowrate_biomas = round(predictions[1], 1)
-        mass_flowrate_workingfluid = int(predictions[2])
-        hot_side_inlet_temp = predictions[3]
-        st.write(f"Maximum Heat Supplied: {maximum_heat_supplied}")
-        st.write(f"Mass Flowrate of Biomass: {mass_flowrate_biomas}")
-        st.write(f"Mass Flowrate of Working Fluid: {mass_flowrate_workingfluid}")
-        st.write(f"Hot Side Inlet Temperature: {hot_side_inlet_temp}")
+        Type_Biomass = int(predictions[2])
+        Strength_of_mixture = int(predictions[2])
+        Combustion_efficiency = int(predictions[2])
+        Temperature_at_point1 = int(predictions[2])
+        Pressure_at_point1 = int(predictions[2])
+        Temperature_at_point2 = int(predictions[2])
+        pump_efficiency = int(predictions[2])
+        Evaporator_efficiency = int(predictions[2])
+        Pinch_Point_Temperature = round(predictions[1], 1)
+        
+        st.write(f"Strength of mixture: {Strength_of_mixture}")
+        st.write(f"Combustion efficiency: {Combustion_efficiency}")
+        st.write(f"Temperature at point1: {Temperature_at_point1}")
+        st.write(f"Pressure at point1: {Pressure_at_point1}")
+        st.write(f"Temperature at point2: {Temperature_at_point2}")
+        st.write(f"pump efficiency: {pump_efficiency}")
+        st.write(f"Evaporator efficiency: {Evaporator_efficiency}")
+        st.write(f"Pinch Point Temperature: {Pinch_Point_Temperature}")
 
 #st.title("Eniola's Project")
 
