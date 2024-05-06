@@ -80,7 +80,7 @@ columns = ['Mass_flowrate_Biomass',"Hot_side_Inlet_Temperature",
 #label = "Maximum_heat_supplied"
 labels = ['Type_Biomass','Strength_of_mixture', 
            'Combustion_efficiency', 'Temperature_at_point1', 
-           'Pressure_at_point1' , 'Temperature_at_point2', 'pump_efficiency',
+           'Pressure_at_point1' , 'Temperature_at_point2', 'Pump_efficiency',
            'Evaporator_efficiency','Pinch_Point_Temperature'
            ]
 
@@ -109,6 +109,7 @@ def model_interface():
         #pump_efficiency = st.number_input(label="Pump Efficiency", min_value=0.1, max_value=0.9)
         Maximum_heat_supplied = st.number_input(label="Maximum heat supplied", min_value=320, max_value=6900)
         Heat_Input_Heat_Exchanger = st.number_input(label="Heat Input into HeatExchanger", min_value=280, max_value=4020)
+        Net_Power_Outputr = st.number_input(label="Net Power Output", min_value=85, max_value=1940)
         Cycle_Thermal_Efficiency = st.number_input(label="Cycle Thermal Efficiency", min_value=1.9, max_value=6.9)
         Exergy_Efficiency = st.number_input(label="Exergy Efficiency", min_value= 0.2, max_value= 1.4)
         values = [#strength_of_mixture,
@@ -139,7 +140,7 @@ def model_interface():
         Temperature_at_point1 = int(predictions[2])
         Pressure_at_point1 = int(predictions[2])
         Temperature_at_point2 = int(predictions[2])
-        pump_efficiency = int(predictions[2])
+        Pump_efficiency = int(predictions[2])
         Evaporator_efficiency = int(predictions[2])
         Pinch_Point_Temperature = round(predictions[1], 1)
 
@@ -149,7 +150,7 @@ def model_interface():
         st.write(f"Temperature at point1: {Temperature_at_point1}")
         st.write(f"Pressure at point1: {Pressure_at_point1}")
         st.write(f"Temperature at point2: {Temperature_at_point2}")
-        st.write(f"pump efficiency: {pump_efficiency}")
+        st.write(f"pump efficiency: {Pump_efficiency}")
         st.write(f"Evaporator efficiency: {Evaporator_efficiency}")
         st.write(f"Pinch Point Temperature: {Pinch_Point_Temperature}")
 
