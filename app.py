@@ -134,9 +134,9 @@ def model_interface():
     if button:
         prediction = model(torch.tensor(array).to(dtype = torch.float32))
         predictions = prediction.detach().tolist()[0]
-        Type_Biomass = int(predictions[0])
+        Type_Biomass = round(predictions[0])
         Strength_of_mixture = round(predictions[1])
-        Combustion_efficiency = round(predictions[2])
+        Combustion_efficiency = round(predictions[2],1)
         Temperature_at_point1 = int(predictions[3])
         Pressure_at_point1 = int(predictions[4])
         Temperature_at_point2 = int(predictions[5])
